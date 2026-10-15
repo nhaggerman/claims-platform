@@ -4,7 +4,7 @@ services:
     container_name: claims-db     # Fixed name so commands and logs are predictable
     environment:
       POSTGRES_DB: claims          # Database created on FIRST startup only
-      POSTGRES_USER: claims_app    # App-specific user instead of the "postgres" superuser
+      POSTGRES_USER: claims_app    # A Named app user (still a superuser in the official image — fine for local dev)
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-localdev}  # Read from .env, fall back to "localdev"
     ports:
       - "5433:5432"                # host:container. Your app connects to localhost:5433
