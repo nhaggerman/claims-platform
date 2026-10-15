@@ -1,0 +1,20 @@
+services:
+  postgres:
+    image: postgres:17            # Pin a major version; "latest" can silently jump to a breaking one
+    container_name: claims-db     # Fixed name so commands and logs are predictable
+    environment:
+      POSTGRES_DB: claims          # Database created on FIRST startup only
+      POSTGRES_USER: claims_app    # App-specific user instead of the "postgres" superuser
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-localdev}  # Read from .env, fall back to "localdev"
+    ports:
+      - "5433:5432"                # host:container. Your app connects to localhost:5433
+    volumes:
+      - pgdata:/var/lib/postgresql/data   # Data lives in a volume, so it survives container deletion
+    healthcheck:                   # "Container running" ≠ "Postgres ready for connections"
+      test: ["CMD-SHELL", "pg_isready -U claims_app -d claims"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  pgdata:                          # Declares the named volume; Docker manages where it lives on disk
